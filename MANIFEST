@@ -1,0 +1,12 @@
+Build.PL
+Changes
+lib/Geo/LocaPoint.pm
+Makefile.PL
+MANIFEST
+META.yml			# Will be created by "make dist"
+README
+t/00.load.t
+t/01.ll2lcp.t
+t/02.lcp2ll.t
+t/perlcritic.t
+t/pod.t
