@@ -12,6 +12,9 @@ my $builder = Module::Build->new(
         'version'     => 0,
         'Math::Round' => 0,
     },
+    build_requires => {
+        'Test::Base' => 0,
+    },
     add_to_cleanup      => [ 'Geo-LocaPoint-*' ],
 );
 

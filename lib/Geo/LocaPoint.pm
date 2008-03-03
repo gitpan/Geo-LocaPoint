@@ -4,27 +4,26 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.0.1');
-use vars qw(@ISA @EXPORT);
+use version; our $VERSION = qv('0.0.2');
+use vars qw(@ISA @EXPORT @EXPORT_OK);
 use Exporter;
 @ISA = qw(Exporter);
 @EXPORT      = qw(latlng2locapoint locapoint2latlng);
+@EXPORT_OK   = qw(latlng2locaporterbase locaporterbase2latlng);
 
 use Math::Round qw(nhimult);
 
-my @devider = (1757600,67600,6760,260,10);
+my @devider = (1757600,67600,6760,260,10,1);
 
 # Internal methods
 
 sub int2code {
-    my ($value,$count) = @_;
+    my ($value,$count,$precision,$islocapo) = @_;
     my $this = int($value / $devider[$count]);
     my $low = $value % $devider[$count];
-    $this = pack "C", 65 + $this if ($count != 2); 
-    if ($count == 4) {
-        $this .= $low;
-    } else {
-        $this .= int2code($low,$count+1);
+    $this = pack "C", 65 + $this if (!$islocapo || ($count % 3 != 2)); 
+    if ($count < $precision - 1) {
+        $this .= int2code($low,$count+1,$precision,$islocapo);
     }
     return $this;
 }
@@ -35,30 +34,49 @@ sub code2int {
     my $low = substr($value,1);
     $this = unpack("C",$this) - 65 if ($this =~ /^[A-Z]$/);
     $this *= $devider[$count];
-    if ($count == 4) {
-        $this += $low;
-    } else {
+    if ($low ne '') {
         $this += code2int($low,$count+1);
     }
     return $this;
 }
 
-# Export methods
-
-sub latlng2locapoint {
-    my ($lat,$long) = @_;
+sub latlng2code {
+    my ($lat,$lng,$precision,$islocapo) = @_;
 
     $lat = int(($lat + 90) * 2284880 / 9);
-    $long = int(($long + 180) *1142440 / 9);
+    $lng = int(($lng + 180) *1142440 / 9);
 
-    foreach ($lat,$long) {
+    foreach ($lat,$lng) {
         while (($_ < 0) || ($_ > 45697599)) {
             $_ = $_ < 0 ? $_ + 45697600 : $_ - 45697600;
         }    
-        $_ = int2code($_,0);
+        $_ = int2code($_,0,$precision,$islocapo);
     }
+    
+    return ($lat,$lng);
+}
+
+sub code2latlng {
+    my ($lat,$lng) = @_;
+
+    foreach ($lat,$lng) {    
+        $_ = code2int($_,0);
+    }
+
+    $lat = nhimult(.000001,$lat * 9 / 2284880 - 90);
+    $lng = nhimult(.000001,$lng * 9 / 1142440 - 180);
+
+    return ($lat,$lng);
+}
+
+# Export methods
+
+sub latlng2locapoint {
+    my ($lat,$lng) = @_;
+
+    ($lat,$lng) = latlng2code($lat,$lng,6,1);
   
-    my $locapo = sprintf("%s.%s.%s.%s",substr($lat,0,3),substr($long,0,3),substr($lat,3,3),substr($long,3,3));
+    my $locapo = sprintf("%s.%s.%s.%s",substr($lat,0,3),substr($lng,0,3),substr($lat,3,3),substr($lng,3,3));
     return $locapo;
 }
 
@@ -69,14 +87,28 @@ sub locapoint2latlng {
     my $lat = $1.$3;
     my $lng = $2.$4;
 
-    foreach ($lat,$lng) {    
-        $_ = code2int($_,0);
+    return code2latlng($lat,$lng);
+}
+
+sub latlng2locaporterbase {
+    my ($lat,$lng,$precision) = @_;
+
+    ($lat,$lng) = latlng2code($lat,$lng,$precision);
+    $lng        = lc($lng);
+
+    return wantarray ? ($lat, $lng) : $lat.$lng;
+}
+
+sub locaporterbase2latlng {
+    my ($lat,$lng) = @_;
+
+    unless (defined($lng)) {
+        ($lat,$lng) = $lat =~ /^([A-Z]+)([a-z]+)$/;
     }
 
-    $lat = nhimult(.000001,$lat * 9 / 2284880 - 90);
-    $lng = nhimult(.000001,$lng * 9 / 1142440 - 180);
+    $lng = uc($lng);
 
-    return ($lat,$lng);
+    return code2latlng($lat,$lng);
 }
 
 1; # Magic true value required at end of module

@@ -8,5 +8,7 @@ README
 t/00.load.t
 t/01.ll2lcp.t
 t/02.lcp2ll.t
+t/03ll2porterbase.t
+t/04porterbase2ll.t
 t/perlcritic.t
 t/pod.t
