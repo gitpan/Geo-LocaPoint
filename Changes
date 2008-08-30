@@ -1,5 +1,8 @@
 Revision history for Geo-LocaPoint
 
+0.0.3  Sun Aug 31 2008
+       Add some pods, tests, required modules.
+
 0.0.2  Mon Mar  3 23:46:00 2008
        Internal logic changes.
 

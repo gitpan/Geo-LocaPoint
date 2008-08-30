@@ -8,7 +8,7 @@ my $builder = Module::Build->new(
     dist_author         => 'OHTSUKA Ko-hei <nene@kokogiko.net>',
     dist_version_from   => 'lib/Geo/LocaPoint.pm',
     requires => {
-        'Test::More'  => 0,
+        'Test::Base'  => 0,
         'version'     => 0,
         'Math::Round' => 0,
     },

@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.0.2');
+use version; our $VERSION = qv('0.0.3');
 use vars qw(@ISA @EXPORT @EXPORT_OK);
 use Exporter;
 @ISA = qw(Exporter);
@@ -136,6 +136,40 @@ This document describes Geo::LocaPoint version 0.0.1
   
   # Decode LocaPoint to latitude/longitude
   ($lat,$lng) = locapoint2latlng($locapo);
+
+
+=head1 EXPORT METHODS
+
+=over
+
+=item * latlng2locapoint
+
+=item * locapoint2latlng
+
+=back
+
+
+=head1 INTERNAL METHODS
+
+=over
+
+=item * code2int
+
+=item * code2latlng
+
+=item * int2code
+
+=item * latlng2code
+
+=item * latlng2locapoint
+
+=item * latlng2locaporterbase
+
+=item * locapoint2latlng
+
+=item * locaporterbase2latlng
+ 
+=back
 
 
 =head1 DEPENDENCIES
