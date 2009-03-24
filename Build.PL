@@ -12,8 +12,13 @@ my $builder = Module::Build->new(
         'version'     => 0,
         'Math::Round' => 0,
     },
-    build_requires => {
-        'Test::Base' => 0,
+    auto_features => {
+        'Geo::Formatter::Format::LocaPoint' => {
+            description => "Enable to use LocaPoint format with Geo::Formatter",
+            requires    => {
+                'Geo::Formatter'             => '0.0.1',
+            },
+        },
     },
     add_to_cleanup      => [ 'Geo-LocaPoint-*' ],
 );
